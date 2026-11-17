@@ -1,7 +1,6 @@
 # IL-15 — Filtrage de spam à grande échelle
 
-Projet Big Data (filière IL, groupe de 4) : chaîne de données complète, de la source au tableau de bord.
-**Ce dépôt contient la structure initiale : le code reste à écrire par l'équipe.**
+Projet Big Data 
 
 ## Architecture
 
