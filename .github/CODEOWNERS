@@ -1,0 +1,13 @@
+# Remplacer @pseudo-eN par les identifiants GitHub réels des 4 membres.
+# Les propriétaires sont demandés automatiquement en relecture sur les pull requests.
+
+*                         @pseudo-e1 @pseudo-e2 @pseudo-e3 @pseudo-e4
+/docker-compose.yml       @pseudo-e1 @pseudo-e2 @pseudo-e3 @pseudo-e4
+/docs/                    @pseudo-e1 @pseudo-e2 @pseudo-e3 @pseudo-e4
+
+/producer/                @pseudo-e1
+/data/                    @pseudo-e1
+/lakehouse/               @pseudo-e2
+/spark/                   @pseudo-e3
+/airflow/                 @pseudo-e4
+/superset/                @pseudo-e4

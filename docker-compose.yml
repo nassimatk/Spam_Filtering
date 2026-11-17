@@ -1,0 +1,33 @@
+# =====================================================================
+#  Plateforme Big Data IL-15 — squelette du fichier docker-compose.yml
+#  Objectif final : tout démarre avec UNE commande :  docker compose up -d --build
+#
+#  Chaque propriétaire ajoute SES services dans SA section (limite les conflits Git).
+#  Les noms, ports et variables sont définis dans docs/contrat_interface.md et .env.example
+# =====================================================================
+name: il15-spam
+
+services:
+  # ------------------------------------------------------------------
+  # COMMUN : postgres (métadonnées Airflow / Superset + copie du Gold)
+  # ------------------------------------------------------------------
+
+  # ------------------------------------------------------------------
+  # E1 : kafka, kafka-init, kafka-ui, producer
+  # ------------------------------------------------------------------
+
+  # ------------------------------------------------------------------
+  # E2 : minio, minio-init
+  # ------------------------------------------------------------------
+
+  # ------------------------------------------------------------------
+  # E3 : spark-master, spark-worker, spark-client, spark-stream-bronze, spark-stream-classify
+  # ------------------------------------------------------------------
+
+  # ------------------------------------------------------------------
+  # E4 : airflow-init, airflow-webserver, airflow-scheduler, superset
+  # ------------------------------------------------------------------
+
+# volumes:
+#   pg-data:
+#   minio-data:

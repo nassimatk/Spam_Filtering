@@ -1,0 +1,29 @@
+# Secrets et configuration locale
+.env
+
+# Données (volumineuses) : seuls les scripts de préparation sont versionnés
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Airflow / Spark / divers
+airflow/logs/
+spark-warehouse/
+metastore_db/
+derby.log
+*.log
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

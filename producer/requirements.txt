@@ -1,0 +1,2 @@
+# Propriétaire : E1 — Dépendances Python du producteur
+# TODO : à écrire par E1.

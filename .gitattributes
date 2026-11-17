@@ -1,0 +1,8 @@
+# Évite les fins de ligne Windows (CRLF) qui cassent les scripts dans les conteneurs Linux
+* text=auto
+*.sh text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+Dockerfile text eol=lf
+Makefile text eol=lf

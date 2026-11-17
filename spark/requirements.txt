@@ -1,0 +1,2 @@
+# Propriétaire : E3 — Dépendances Python de l'image Spark
+# TODO : à écrire par E3.

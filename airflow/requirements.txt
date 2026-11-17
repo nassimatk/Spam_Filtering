@@ -1,0 +1,2 @@
+# Propriétaire : E4 — Dépendances Python des DAG
+# TODO : à écrire par E4.
