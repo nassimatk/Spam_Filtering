@@ -28,4 +28,6 @@ Fournit : jobs paramétrables, modèle, Silver / Gold remplis. Reçoit : Kafka (
 Les noms (topic, buckets, tables, DAG) sont dans [`docs/contrat_interface.md`](../docs/contrat_interface.md).
 
 ## Notes de l'étudiant
-<!-- Décisions, commandes utiles, problèmes rencontrés : à compléter au fil du projet -->
+- Démarrage : environnement local PySpark, entraînement d'abord sur SMSSpamCollection.
+- Ordre de travail : features.py, train_model.py, puis Dockerfile et jobs de streaming.
+- À décider avec E2 : versions Spark / Hudi / Hadoop-AWS (docs/versions.md).
