@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 COMPOSE ?= docker compose
-.PHONY: help init build up down clean logs ps lint
+.PHONY: help init build up down clean logs ps lint data up-ingestion
 
 help: ## Affiche cette aide
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -29,3 +29,9 @@ ps: ## État des services
 lint: ## Vérifie le style Python
 	@ruff check .
 # TODO : chaque propriétaire ajoute ses raccourcis (ex. up-ingestion, spark-job, trigger-dag)
+data: ## Prépare train.jsonl / live.jsonl (E1)
+	@$(COMPOSE) build producer
+	@$(COMPOSE) run --rm --no-deps --entrypoint python producer prepare_data.py
+
+up-ingestion: init ## Kafka + producteur (E1)
+	@$(COMPOSE) up -d --build kafka kafka-init kafka-ui producer

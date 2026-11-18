@@ -8,6 +8,7 @@
 name: il15-spam
 
 services:
+
   # ------------------------------------------------------------------
   # COMMUN : postgres (métadonnées Airflow / Superset + copie du Gold)
   # ------------------------------------------------------------------
@@ -15,7 +16,66 @@ services:
   # ------------------------------------------------------------------
   # E1 : kafka, kafka-init, kafka-ui, producer
   # ------------------------------------------------------------------
+  kafka:
+    image: apache/kafka:3.7.0
+    container_name: kafka
+    ports:
+      - "${KAFKA_EXTERNAL_PORT:-29092}:29092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: INTERNAL://:9092,EXTERNAL://:29092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
 
+  kafka-init:
+    image: apache/kafka:3.7.0
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_TOPIC: ${KAFKA_TOPIC:-messages}
+    volumes:
+      - ./producer/kafka/init-topics.sh:/init-topics.sh:ro
+    entrypoint: ["/bin/bash", "/init-topics.sh"]
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "${KAFKA_UI_PORT:-8090}:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: il15
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on:
+      - kafka
+
+  producer:
+    build: ./producer
+    depends_on:
+      kafka-init:
+        condition: service_completed_successfully
+    environment:
+      KAFKA_BOOTSTRAP: kafka:9092
+      KAFKA_TOPIC: ${KAFKA_TOPIC:-messages}
+      PRODUCER_MODE: ${PRODUCER_MODE:-live}
+      PRODUCER_RATE: ${PRODUCER_RATE:-5}
+      PRODUCER_LOOP: ${PRODUCER_LOOP:-true}
+      SPIKE_AFTER: ${SPIKE_AFTER:-0}
+      DATA_DIR: /data
+    volumes:
+      - ./data:/data
   # ------------------------------------------------------------------
   # E2 : minio, minio-init
   # ------------------------------------------------------------------

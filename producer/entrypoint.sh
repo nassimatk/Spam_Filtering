@@ -1,3 +1,6 @@
 #!/bin/bash
-# Propriétaire : E1 — Point d'entrée : prépare les données si absentes, puis lance le producteur
-# TODO : à écrire par E1.
+set -e
+if [ ! -f /data/processed/live.jsonl ]; then
+  python prepare_data.py
+fi
+exec python producer.py
