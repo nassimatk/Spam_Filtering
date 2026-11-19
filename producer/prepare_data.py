@@ -1,6 +1,3 @@
-"""Propriétaire : E1 — Normalise Enron + SMS vers le schéma commun ; produit train.jsonl et live.jsonl
-"""
-"""E1 - Normalise SMS (+ Enron étiqueté si présent) vers le schéma commun."""
 import csv
 import hashlib
 import json

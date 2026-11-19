@@ -1,5 +1,3 @@
-"""Propriétaire : E1 — Rejoue les messages dans le topic Kafka (débit configurable, scénario de pic de spam)"""
-"""E1 - Rejoue les messages dans Kafka (débit configurable, pic de spam)."""
 import hashlib
 import json
 import os
@@ -57,7 +55,7 @@ def send(p, rec):
     p.poll(0)
 
 def main():
-    records = [json.loads(l) for l in FILE.open(encoding="utf-8") if l.strip()]
+    records = [json.loads(line) for line in FILE.open(encoding="utf-8") if line.strip()]
     spam = [r for r in records if r.get("label") == "spam"]
     p = Producer({"bootstrap.servers": BOOT, "acks": "all",
                   "enable.idempotence": True, "linger.ms": 20})
