@@ -24,15 +24,14 @@ Fournit : topic `messages`, jeux train / live. Reçoit : schéma du message vali
 Les noms (topic, buckets, tables, DAG) sont dans [`docs/contrat_interface.md`](../docs/contrat_interface.md).
 
 ## Notes de l'étudiant
-<!-- Décisions, commandes utiles, problèmes rencontrés : à compléter au fil du projet -->
 - Source : SMS Spam Collection (UCI), 5 574 lignes -> 5 160 messages après dédoublonnage
   (train.jsonl : 4 127 / live.jsonl : 1 033), découpe stratifiée 80/20, graine 42.
-- Expéditeurs et dates simulés ; le spam est concentré sur 15 numéros. Le sender est donc
-  généré à partir du label : ne pas l'utiliser comme variable du modèle (fuite d'information).
+- Expéditeurs et dates simulés ; le spam est concentré sur 15 numéros. Le sender est généré
+  à partir du label : ne pas l'utiliser comme variable du modèle (fuite d'information).
 - Les textes bruts contiennent des entités HTML (ex. `&lt;#&gt;`) : à traiter en Silver, pas en Bronze.
 - Topic `messages` (3 partitions, clé = sender), file d'erreurs `messages_dlq`.
 - Mode live : event_ts = heure d'envoi ; en boucle, message_id modifié à chaque passe
   (sinon l'upsert Hudi écraserait les lignes).
-- Pic de spam pour la démo : `$env:SPIKE_AFTER=30; docker compose up -d --force-recreate producer`
+- Pic de spam pour la démo : `make spam-burst` (ou `producer.py --scenario spam_burst`).
 - Kafka sans volume : les messages disparaissent au `docker compose down`.
 - Arrêter le flux : `docker compose stop producer`.

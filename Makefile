@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 COMPOSE ?= docker compose
-.PHONY: help init build up down clean logs ps lint data up-ingestion
+.PHONY: help init build up down clean logs ps lint data up-ingestion spam-burst
 
 help: ## Affiche cette aide
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -23,7 +23,7 @@ clean: ## Arrête et supprime les volumes
 logs: ## Journaux : make logs SERVICE=kafka
 	@$(COMPOSE) logs -f --tail=100 $(SERVICE)
 
-ps: ## État des services
+ps: ## État des servicesko
 	@$(COMPOSE) ps
 
 lint: ## Vérifie le style Python
@@ -35,3 +35,6 @@ data: ## Prépare train.jsonl / live.jsonl (E1)
 
 up-ingestion: init ## Kafka + producteur (E1)
 	@$(COMPOSE) up -d --build kafka kafka-init kafka-ui producer
+
+spam-burst: ## Pic de spam pour la démo (E1)
+	@$(COMPOSE) run --rm --no-deps --entrypoint python producer producer.py --scenario spam_burst
