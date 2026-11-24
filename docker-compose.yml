@@ -79,6 +79,37 @@ services:
   # ------------------------------------------------------------------
   # E2 : minio, minio-init
   # ------------------------------------------------------------------
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio-data:/data
+    ports:
+      - "${MINIO_API_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # Crée les buckets bronze, silver, gold, models, checkpoints (idempotent)
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./lakehouse/init_minio.sh:/init_minio.sh:ro
+    entrypoint: ["/bin/sh", "/init_minio.sh"]
+    restart: "no"
 
   # ------------------------------------------------------------------
   # E3 : spark-master, spark-worker, spark-client, spark-stream-bronze, spark-stream-classify
@@ -88,6 +119,6 @@ services:
   # E4 : airflow-init, airflow-webserver, airflow-scheduler, superset
   # ------------------------------------------------------------------
 
-# volumes:
-#   pg-data:
-#   minio-data:
+volumes:
+  # pg-data:        (à décommenter par celui qui ajoute postgres)
+  minio-data:
