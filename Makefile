@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 COMPOSE ?= docker compose
-.PHONY: help init build up down clean logs ps lint
+.PHONY: help init build up down clean logs ps lint up-lake lake-test lake-demo
 
 help: ## Affiche cette aide
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -28,4 +28,19 @@ ps: ## État des services
 
 lint: ## Vérifie le style Python
 	@ruff check .
-# TODO : chaque propriétaire ajoute ses raccourcis (ex. up-ingestion, spark-job, trigger-dag)
+
+# ---- E2 : Lakehouse -------------------------------------------------
+SPARK_SUBMIT_E2 = /opt/spark/bin/spark-submit --master spark://spark-master:7077 \
+  --conf spark.driver.host=spark-client --conf spark.driver.bindAddress=0.0.0.0 \
+  --conf spark.cores.max=1 --conf spark.executor.memory=512m --conf spark.driver.memory=512m
+
+up-lake: init ## E2 : MinIO + buckets (console : http://localhost:9001)
+	@$(COMPOSE) up -d minio minio-init
+
+lake-test: ## E2 : test Spark <-> MinIO <-> Hudi (nécessite le service spark-client d'E3)
+	@$(COMPOSE) exec spark-client $(SPARK_SUBMIT_E2) /opt/app/lakehouse/test_hudi_minio.py
+
+lake-demo: ## E2 : démonstration Hudi (upsert, time travel, incrémental)
+	@$(COMPOSE) exec spark-client $(SPARK_SUBMIT_E2) /opt/app/lakehouse/demo_hudi.py
+
+# TODO : E1, E3 et E4 ajoutent leurs raccourcis ci-dessous
