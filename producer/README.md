@@ -35,4 +35,3 @@ Les noms (topic, buckets, tables, DAG) sont dans [`docs/contrat_interface.md`](.
 - Pic de spam pour la démo : `make spam-burst` (ou `producer.py --scenario spam_burst`).
 - Kafka sans volume : les messages disparaissent au `docker compose down`.
 - Arrêter le flux : `docker compose stop producer`.
-- aaaaaaaaaaaaaaaaaaaaaaaaaaaaa
