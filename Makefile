@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 COMPOSE ?= docker compose
-.PHONY: help init build up down clean logs ps lint up-lake lake-test lake-demo
+.PHONY: help init build up down clean logs ps lint data up-ingestion spam-burst up-lake lake-test lake-demo
 
 help: ## Affiche cette aide
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "  %-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -29,6 +29,17 @@ ps: ## État des services
 lint: ## Vérifie le style Python
 	@ruff check .
 
+# ---- E1 : Ingestion Kafka -------------------------------------------
+data: ## Prépare train.jsonl / live.jsonl (E1)
+	@$(COMPOSE) build producer
+	@$(COMPOSE) run --rm --no-deps --entrypoint python producer prepare_data.py
+
+up-ingestion: init ## Kafka + producteur (E1)
+	@$(COMPOSE) up -d --build kafka kafka-init kafka-ui producer
+
+spam-burst: ## Pic de spam pour la démo (E1)
+	@$(COMPOSE) run --rm --no-deps --entrypoint python producer producer.py --scenario spam_burst
+
 # ---- E2 : Lakehouse -------------------------------------------------
 SPARK_SUBMIT_E2 = /opt/spark/bin/spark-submit --master spark://spark-master:7077 \
   --conf spark.driver.host=spark-client --conf spark.driver.bindAddress=0.0.0.0 \
@@ -43,4 +54,4 @@ lake-test: ## E2 : test Spark <-> MinIO <-> Hudi (nécessite le service spark-cl
 lake-demo: ## E2 : démonstration Hudi (upsert, time travel, incrémental)
 	@$(COMPOSE) exec spark-client $(SPARK_SUBMIT_E2) /opt/app/lakehouse/demo_hudi.py
 
-# TODO : E1, E3 et E4 ajoutent leurs raccourcis ci-dessous
+# TODO : E3 et E4 ajoutent leurs raccourcis ci-dessous
